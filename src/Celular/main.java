@@ -1,11 +1,11 @@
-package Contacts;
+package Celular;
 
-import UI.ContactsUI;
+import UI.CelularUI;
 
 public class main {
 
 	public static void main(String[] args) {
-		ContactsUI ui = new ContactsUI();
+		CelularUI ui = new CelularUI();
 		ui.loopMenu();
 	}
 

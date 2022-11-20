@@ -4,22 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import Contacts.ContactsList;
-import Contacts.CallRegistry;
-import Contacts.PersonContact;
+import Celular.Contato;
+import Celular.ListaContatos;
+import Celular.ListaDeChamadas;
 
-public class ContactsUI {
+
+public class CelularUI {
 	private Scanner teclado;
-	private CallRegistry CallRegistry = new CallRegistry();
-	private ContactsList contactsList = new ContactsList();
+	private ListaDeChamadas listaChamadas = new ListaDeChamadas();
+	private ListaContatos listaContatos = new ListaContatos();
 	
-	public ContactsUI() {
+	public CelularUI() {
 		teclado = new Scanner(System.in);
 	}
 	
 	public void loopMenu() {
 		menu();
-		boolean condicao = true;
+		boolean condicao = true; 
 		
 		while(condicao) {
 			System.out.printf("\nDigite a opção que deseja do menu: ");
@@ -63,26 +64,30 @@ public class ContactsUI {
 	public void cadastrarContato() {
 		System.out.println("Adicionando um contato!");
 		System.out.println("Digite o nome da pessoa que queres adicionar: ");
-		String name = teclado.next();
+		String nome = teclado.next();
 		System.out.println("Digite o numero da pessoa que queres adicionar: ");
-		String number = teclado.next();
+		String numero = teclado.next();
 		
-		PersonContact person = new PersonContact(name, number);
+		Contato pessoa = new Contato(nome, numero);
 		
-		contactsList.addToList(person);
-		System.out.printf("Contato Adicionado!");
+		if(listaContatos.adicionaContato(pessoa)) {
+			System.out.printf("Contato Adicionado!");
+		}
+		else {
+			System.out.printf("Não foi possível adicionar este contato. Tente novamente!");
+		}
 	}
 	
 	public void removerContato() {
 		System.out.println("Removendo um contato!");
 		System.out.println("Digite o nome da pessoa que queres remover: ");
-		String name = teclado.next();
+		String nome = teclado.next();
 		System.out.println("Digite o numero da pessoa que queres remover: ");
-		String number = teclado.next();
+		String numero = teclado.next();
 		
 		
-		PersonContact person = new PersonContact(name, number);
-		if(contactsList.remover(person)) {
+		Contato pessoa = new Contato(nome, numero);
+		if(listaContatos.removerContato(pessoa)) {
 			System.out.println("Contato Removido!");
 		}
 		else {
@@ -95,17 +100,45 @@ public class ContactsUI {
 		System.out.println("Adicionando uma chamada não atendida!");
 		System.out.println("Digite o numero da pessoa que ligou: ");
 		String numeroLigou = teclado.next();
-		CallRegistry.addCall(numeroLigou);
+		if(listaChamadas.adicionarChamada(numeroLigou)) {
+			System.out.printf("Chamada não atendida foi adicionada à lista");
+		}
+		else {
+			System.out.printf("Não foi possível adicionar a chamada. Tente novamente.");
+		}
 	}
 	
 	public void mostrarNaoAtendida() {
-		System.out.println("CHAMADAS NÃO ATENDIDAS");
-		CallRegistry.printCallRegistry();
+		System.out.println("-- CHAMADAS NÃO ATENDIDAS --");
+		List<String> lista = listaChamadas.getRegistroDeChamadas();
+		Contato c = null;
+		
+		if(lista.isEmpty()) {
+			System.out.println("Nenhuma chamada não atendida");
+		}
+		else {
+			for(int i=0; i<lista.size();i++) {
+				c = listaContatos.verificaExistencia(lista.get(i));
+				if(c != null) {
+					System.out.println("- "+ c.getNome());
+				}
+				else {
+					System.out.println("- "+ lista.get(i));
+				}
+			}
+		}
+		System.out.println("----------------------------");
+		
 	}
 	
 	public void excluirNaoAtendida() {
 		System.out.println("Excluindo todas chamadas não atendidas");
-		CallRegistry.removeAll();
+		if(listaChamadas.removerTudo()) {
+			System.out.println("Todas chamadas removidas com sucesso!");
+		}
+		else {
+			System.out.println("Não foi possível remover as chamadas. Tente novamente.");
+		}
 	}
 	
 	public void naoExiste() {
